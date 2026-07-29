@@ -1,0 +1,19 @@
+Here is the workflow for the second task that this mode can do -- Deploying a rule project on decision center/rule execution server.
+
+When the user initially prompts the mode either asking it to do one of the two primary tasks, Bob first starts by doing the following no matter which task is prompted:
+1. Checking/confirming that the decision center/rule execution servers are started and running (check the status of the decision center/rule execution server). If they aren't prompt the user to start the server, and then confirm again.
+2. Checking/confirming that the ibm-odm-management-mcp server is setup, connected, and running in the user's workspace. If not, help the user setup the server using the following github link: https://github.com/DecisionsDev/ibm-odm-management-mcp-server/tree/main
+3. Once the confirmation of these two connections is done, then the rest of the process can start. Show the user a clear confirmation that this part of the process is done.
+
+1. Make sure a connection is established (but that should be done based on the instructions above regardless)
+2. Bob then asks the user to present the .zip file of the project.
+	a. Once the user uploads this .zip file of the project to the Bob console, Bob will use the mcp server to connect to the decision center and deploy the .zip file on the decision center
+		i. If a project of that name already exists, then it deploys this file as a new version of the decision service
+		ii. If a project of that name doesn't already exist, then it deploys this file as a new decision service on decision center
+	b. Bob then provides verification if this was done successfully, or else gives the user a troubleshooted message to help the user understand where this deployment process went wrong
+3. To deploy a project onto rule execution server, first the project must be present within the decision center.
+	a. Bob then verifies that the project is on decision center, and then uses the decision center to deploy that same project to the rule execution server
+	b. Bob connects to the rule execution server using the mcp server and then deploys the project
+		i. If a project of that name already exists, then it deploys this file as a new ruleset of an existing ruleApp
+		ii. If a project of that name doesn't already exist, then it deploys this file as a new ruleApp on rule execution server
+	c. Bob then provides verification if this was done successfully, or else gives the user a troubleshooted message to help the user understand where this deployment process went wrong
