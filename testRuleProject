@@ -1,47 +1,51 @@
-ODM Rule Tester — Workflow
+This instruction set covers the typical workflow for testing a rule project. This instruction file is invoked when users want to test their rule projects.
 
-This mode has two agents. Here are the responsibilities of each.
+Within this instruction set, there are two agents within this workflow. Here is the specifications of when the two agents are used:
 
-PARENT AGENT handles:
-- Phases 1, 3 -- all the phases covered in the testRuleProject.md document
-- All MCP inspection calls
+PARENT AGENT is the main agent of this workflow, it handles:
+- Phases 1, 3
 - All test case generation and user review
 - Serializing the frozen test case file
 - Rendering the report preview and saving on confirmation
 
 SUBAGENT handles:
-- Phase 2 ONLY -- the phase covered in runningTestcases.md
+- Phase 2 ONLY
 - Spawned via spawn_subagent with fork_context: false
 - Receives NO conversation history
-- Only knows: the frozen JSON file path + MCP tool name + mechanical instructions
-- Returns one structured JSON array — nothing else
+- Recieves the JSON file path as the input of the testcases that need to be tested
+- Returns one structured JSON array
 - Must never interpret, explain, or suggest fixes
+- Just present the results as they are and return that information to the parent agent
 
-The following is the overall workflow for this mode, by specifying each phase of the mode:
+The following is the overall workflow of this instruction set, it specifies each phase in the workflow, so make sure to follow it exactly when testing a rule project:
 
+When the user initially prompts the Bob will first do the following no matter what:
+1. Confirm that the decision center/rule execution servers are started and running. To do this ask user to provide links to their deision center and rule execution server, and then check the status of the server to make sure it is already running and connected. If the aren't running/connected guide the user to start the server. After the server has been confirmed to be connected, display a confirmation message to the user. 
+2. Confirm that the ibm-odm-management-mcp server is setup, connected, and running in the users workspace. If not, help the user setup the server using the following github link: https://github.com/DecisionsDev/ibm-odm-management-mcp-server/tree/main. After the server has been confirmed to be connected, dispaly a confirmation message to the user.
+3. Once the confirmation of these two connections is done, then the rest of the process can start. Show the user a clear' confirmation that this part of the process is done. If this confirmation isn't recieved the rest of the process cannot be completed.
 
-When the user initially prompts the mode either asking it to do one of the two primary tasks, Bob first starts by doing the following no matter which task is prompted:
-1. Checking/confirming that the decision center/rule execution servers are started and running (check the status of the decision center/rule execution server). If they aren't prompt the user to start the server, and then confirm again.
-2. Checking/confirming that the ibm-odm-management-mcp server is setup, connected, and running in the user's workspace. If not, help the user setup the server using the following github link: https://github.com/DecisionsDev/ibm-odm-management-mcp-server/tree/main
-3. Once the confirmation of these two connections is done, then the rest of the process can start. Show the user a clear confirmation that this part of the process is done.
-
-Here is the workflow for the first task that this mode can do -- Testing a rule project.
-#Phase 1: Rule project choosing and testcase generation
+Now you can proceed to phase 1 of this workflow.
+#Phase 1: Choosing the rule project and test case generation
 1. Now that the decision center/rule execution server is connected and the MCP server is connected and running, Bob will present a list of available rule projects that are currently deployed on decision center to the user.
-	a. User picks the rule project they currently want to test
-	b. Once the user selects a rule project for testing (also by default the use the most recent/updated version of the rule project), Bob then does the following (internally):
-		i. Use the mcp server to generate the project ID of the decision service that was chosen: GET/v1/decisionservices/{decisionServiceId}/projects
-		ii. Then use the mcp server again, to use that project ID to generate a report of the rule project: GET/v1/projects/{projectId}/report.
-	c.Then once this report is generated, Bob will internally use this report to understand the overall context of the project. What that means is that:
-		i. Bob will understand the input variables of this decision service. This means it will understand what input variable potential values there are.
+	a. Bob will present this list of available rule projects to the user in the form of a selectable (clickable) list that the users can directly click on to select the rule project they want to test
+	b. Then the user picks the rule project that they want to focus on to test
+2. Once the user selects a rule project for testing (also by default use the most recent/updated version of the rule project), Bob then does the following:
+	a. Use the mcp server to connect to the decision center to generate the project ID of the rule project that was chosen: GET/v1/decisionservices/{decisionServiceId}/projects
+	b. Use the mcp server again connect to the decision center, to use that project ID to generate a report of the rule project: GET/v1/projects/{projectId}/report.
+3. Bob will then use this report internally once the report is generated, Bob will internally use this report to understand the overall context of the project. What this means is that:
+		i. Bob will use the report to understand the input variables of this decision service/rule project. This means it will understand what the input variables and what the potential values are for these input variables (this means Bob figures out what all the different combinations are for the input variables)
 		ii. Bob will understand what the output variables are of this decision service. This means it will understand what outputs need to be generated (and what the potential values for those outputs are)
 		iii. Bob will understand the context of the project. This means that it will get a comprehensive understanding of what the project is about, its purpose, its rule definitions, and what expected outputs could look like for different inputs.
-	d. Now that Bob has conducted an analysis of this report and has a good understanding of what the rule project is about.
-		i. The inputs need to be a comprehensive amount of inputs that will test all the rule definitions, decisions, and all the various permutations and combinations that cane possibly be made from the input values. This means that it needs to cover basic testcases and also edge cases, all possible input value combinations.
-		ii. The expected decision needs to be predicted decision (output) based on the given input values and the analysis of the report that was done to help Bob understand what the rule project is about.
-	e. When these testcases are done being generated, present the testcases to the user in the ".docx" format. Bob will generate this .docx document in the form of the following document (using it as an example): ""C:\Users\SachiKelkar\OneDrive - IBM\Testcases Format Example.pdf"". 
-		i. After generating this .docx document, Bob will say to the user that: "Here is a comprehensive list of testcases to test this decision service. Edit it if needed and reupload the document, and when you are done (or if you don't need to edit the testcases) confirm that you are ready for me to begin the testing process."
-	f. Once the user confirms the testcases, begin the actual testing of the testcases to generate the actual outputs. Here, Bob needs to switch to the subagent. Serialize the complete test suite to a JSON file in the workspace root: Filename: <ruleset-name>-testcases.json. Tell the user: "I've saved the test cases to a <filename>.json. Starting execution now using a fresh isolated evaluator which has no knowledge of how these tests were designed. 
+4. Once Bob has conducted a comprehensive analysis of this project report, it now has a good understanding of what the project is about and should be able to generate testcases in the form of JSON payloads that are a comprehensive list of testcases that will be used to test the rule project.
+	a. Bob will start generating the JSON payload for a comprehensive list of testcases that cover ALL possible input combinations and also includes their expected outputs (based on these input combinations)
+	b. These input combinations should test all the rule definitions, decisions, and all the various permutations and combinations that can possibly be made from the input values. This means that it needs to cover basic testcases and also edge cases, all possible input value combinations.
+	c. The expected decision needs to be predicted decision (output) based on the given input values and the analysis of the report that was done to help Bob understand what the rule project is about.
+	d. When these testcases are being generated as the JSON payload, make sure that the input section of these testcases are marked clearly and the expected outputs section of these testcases is marked clearly.
+	e. An example of what a testcases JSON payload for a rule project could look like is given at the following: 
+5. After this list of comprehensive testcases are generated in the form of a JSON payload, Bob will present this JSON payload to the user and say the following:
+	a. "Here is a comprehensive list of testcases to test this decision service. Edit it if needed and reupload the file, and when you are done (or if you don't need to edit the testcases) confirm that you are ready for me to begin the testing process."
+6. Once the user confirms the testcases, Bob will save the JSON payload that was just edited/saved/confirmed by the user as filename: <ruleset-name>-confirmed-testcases.json. Tell the user: "I've saved the test cases to a <filename>.json at the following <PATH>." This way the user will know where the JSON payload is saved, and what filename it is under. 
+7. Then Bob will switch to Phase 2 of this workflow to begin the testing process. 
 
 
 # Phase 2 - test execution via Bias-Free Subagent
