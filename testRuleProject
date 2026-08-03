@@ -49,36 +49,37 @@ Now you can proceed to phase 1 of this workflow.
 
 
 # Phase 2 - test execution via Bias-Free Subagent
-When entering this phase, it is time to switch to the subagent. This subagent has no previous knowledge of how the testcases were designed in the earlier phases.
+Now that Bob has gotten to this phase in the workflow, it is time to swithc to the subagent. Here are the specifications of this subagent, but the main thing is that this subagent has no knowledge and memory of anything from the parent agent.
 1. Here are the specifications of this subagent.
 	a. Call spawn_subagent with EXACTLY these parameters: name: "explore", fork_context: false
 	b. The description of this subagent is that: "You are a mechanical test executor. That has no prior memory of the conversation. That is intentional. The first thing that you should do when you switch to this subagent is say this to the user: "I have now switched to the subagent that will run the testcases independently, provide me with the JSON payload of the testcases that was generated." 
 	c. The first thing to do when you switch to this subagent mode is:
-		i. Checking/confirming that the decision center/rule execution servers are started and running (check the status of the decision center/rule execution server). If they aren't prompt the user to start the server, and then confirm again.
-		ii. Checking/confirming that the ibm-odm-management-mcp server is setup, connected, and running in the user's workspace. If not, help the user setup the server using the following github link: https://github.com/DecisionsDev/ibm-odm-management-mcp-server/tree/main
-		iii. Once the confirmation of these two connections is done, then the rest of the process can start. Show the user a clear confirmation that this part of the process is done.
-	d. These are the inputs that you will receive as the subagent:
+		i. Confirm that the decision center/rule execution servers are started and running. To do this ask user to provide links to their deision center and rule execution server, and then check the status of the server to make sure it is already running and connected. If the aren't running/connected guide the user to start the server. After the server has been confirmed to be connected, display a confirmation message to the user. 
+		ii. Confirm that the ibm-odm-management-mcp server is setup, connected, and running in the users workspace. If not, help the user setup the server using the following github link: https://github.com/DecisionsDev/ibm-odm-management-mcp-server/tree/main. After the server has been confirmed to be connected, dispaly a confirmation message to the user.
+		iii. Once the confirmation of these two connections is done, then the rest of the process can start. Show the user a clear' confirmation that this part of the process is done. If this confirmation isn't recieved the rest of the process cannot be completed.
+2. Now that you have established a connection with the decision center/rule execution server and the mcp server and making sure that both of those are already connected and running. 
+	a. First thing that Bob will do is provide the user a list of rule apps that are deployed on rule execution server. Bob will do this by using the mcp server to connect to the rule execution server. This will be presented to the user in the form of a selectable list of rule apps.
+	b. The user will then select which rule app they want to test (this means use the most recent ruleset of that ruleApp)
+	c. Then you will ask the user to provide you with the JSON payload of the testcases that they want to test for this rule app that was selected
 		i. The testcase JSON file (user needs to manually upload that into the chat/provide the path name of where the file is stored)
-		ii. Bob will use the mcp server to connect to the Rule Execution Server and provide the user with a list of current ruleApps (list the most recent ruleset) that are deployed on the rule execution server
-		iii. User will then select which ruleApp they want to test
-	e. Then you will test the ruleApp that the user selected using the JSON file that they provided and the ruleApp they selected
-2. Compare every field in expectedOutput against the actual response using exact equality only — no interpretation
+3. For every testcase in the JSON payload, make sure to use the "inputs" section only for each testcase to run the testcases. Compare every expected Output against the actual output for each inputs list in the JSON payload file using exact equality only — no interpretation
 	a. If ALL fields match: status = PASS
 	b. If any field does not match: status = FAIL
 	c. Record exact diff: { field, expected, actual } for every mismatching field
-	d. Record the full raw MCP response verbatim as rawTrace
+	d. Record the full raw MCP response verbatim as rawTrace in the actual output trace category
 	e Do NOT explain why a result is correct or incorrect. Do NOT suggest fixes. Do NOT interpret the rules. Report data only.
-	f. When all these test cases are complete return ONLY this JSON array:
-	[
-          { testId: TC-01, status: PASS, actualOutput: {...} },
-          { testId: TC-02, status: FAIL, actualOutput: {...},
-            diff: [{ field: approved, expected: true, actual: false }],
-            rawTrace: ...full raw MCP response verbatim... }
-        ]"
-3. Subagent returns the JSON array, stores the return value
+4. When these testcases are complete, make the changes in the JSON payload file that was provided by the user. Meaning that the actual output, actual output trace, and status fields should be updated with the testcases being ran.
+5. After the JSON payload file has been updated, let the user know that: "Testcases have been ran, actual output and testcase status' have been updated on the JSON payload file that was provided at "<filename>-testCasesAndResults.json". Provide that file to the user. This is the end of phase 2.
 
 #Phase 3 -- interpreting the results
-1. Switch back to the parent agent. As the parent agent, you should have the information from the subagent that was generated (the JSON results of running the testcases). 
-2. Now that the subagent has returned the JSON array, edit the original generated testcases .docx document with the actual decision (outputs), the actual messages that may have returned, whether the testcases passed or not
-	a. Also for each testcase where it failed, Bob will interpret where the decision service could have failed (and where it can be improved), it will provide an educated analysis of this issue.
-3. Present this .docx file to the user once again and make sure that it is formatted well.
+1. Now that phase 2 has been completed, it is time to start interpreting the results that were returned. 
+2. So first, Bob will switch back to the parent agent, Bob will say to the user: "Now switching back to the parent agent to interpret the test results."
+3. Bob will make sure that it has the information returned from the subagent (meaning the JSON payload of the testcases and their results at the "<filename>-testCasesAndResults.json".)
+4. Now that Bob has confirmed that it has the information of the JSON payload testcases and test results, analyze the testcases where the status was a "FAIL"
+	a. For the testcases where the status was a FAIL and there was a trace of where the rule project/decision service went wrong
+	b. Provide an analyzing statement of what the potential issue could be in the rule project and provide a recommendation of how to fix it
+		i. This analysis/educated reccommendation should be made based on the initial analysis that this parent agent had done about the context of the project and the output trace that was provided in the JSOn payload.
+		ii. Now edit the JSON payload again and make sure that the output failure analysis is provided in the JSON payload.
+5. After all of this is done, say to the user: JSON payload file at "<filename>-finalTestcaseAndResults.json" is the final testcases and results file along with the recommendations of how to fix the failure outputs.
+
+This is the end of the workflow for testing a rule project.
