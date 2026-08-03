@@ -1,0 +1,119 @@
+{
+  input: {
+    "modifierRequest": {
+        "transactionId": "STARTUP_SCRIPT_D3",
+        "transactionSource": "FCBD",
+        "shipment": {
+            "shipper": {
+                "accountCountryCode": "XXXXXXXX",
+                "accountNumber": "XXXXXXXX",
+                "ratingConstructCode": "XXXXXXXX",
+                "ratingConstructType": "01",
+                "currencyCode": "USD",
+                "uomDimensions": "IN",
+                "uomWeight": "LBS",
+                "subConstructs": []
+            },
+            "totalNumberOfPackages": 1,
+            "pickupDate": "2024-07-28",
+            "services": [
+                {
+                    "code": "GND",
+                    "scheduledDeliveryDate": null,
+                    "zone": "007",
+                    "shipmentIndex": null,
+                    "packages": [
+                        {
+                            "id": "1Z1234567890123456",
+                            "leadPackageIndicator": true,
+                            "packageWeights": [
+                                {
+                                    "type": "XXXXXXXXA",
+                                    "weight": 15.0,
+                                    "uomWeight": "LBS"
+                                },
+                                {
+                                    "type": "XXXXXXXXB",
+                                    "weight": 20.0,
+                                    "uomWeight": "LBS"
+                                },
+                                {
+                                    "type": "XXXXXXXXC",
+                                    "weight": 20.0,
+                                    "uomWeight": "LBS"
+                                }
+                            ],
+                            "packageDimensions": [
+                                {
+                                    "type": "SCN",
+                                    "length": 12.0,
+                                    "height": 12.0,
+                                    "width": 12.0,
+                                    "uomDimensions": "IN"
+                                },
+                                {
+                                    "type": "KEY",
+                                    "length": 10.0,
+                                    "height": 10.0,
+                                    "width": 10.0,
+                                    "uomDimensions": "IN"
+                                }
+                            ],
+                            "eligibleAccessorials": []
+                        }
+                    ],
+                    "shipmentWeight": [
+                        {
+                            "type": "BID",
+                            "weight": 151.0,
+                            "uomWeight": "LBS"
+                        }
+                    ],
+                    "shipDate": "0001-01-01",
+                    "averageWeightIndicator": false
+                }
+            ],
+            "originCountry": "US",
+            "originPostalCode": "02346",
+            "originState": "CA",
+            "destinationCountry": "GB",
+            "destinationPostalCode": "01001-134565",
+            "destinationState": "GB",
+            "residential": false,
+            "packageType": "PKG",
+            "clientInformationSourceType": "E7",
+            "billingCalculationInformationSource": null,
+            "billingOption": "F/C",
+            "returnServiceIndicator": false,
+            "deliveryDate": null,
+            "deliveryDateCode": null,
+            "rateSegmentCodes": [
+                "HL03",
+                "HL02",
+                "HL01",
+                "DOW1",
+                "DOW2",
+                "DOW3",
+                "DOW4",
+                "DOW5"
+            ],
+            "originBuildingCode": "MABRO",
+            "destinationBuildingCode": "",
+            "rateType": "01",
+            "specialShippingCode": []
+        }
+    }
+  }, 
+  expected output: {
+    "expected output fill in"
+  },
+  actual output: {
+    "actual output fill in"
+  }, 
+  actual output trace: {
+    "trace fill in"
+  }
+  status: {
+    "pass or fail of output fill in"
+  }
+}
