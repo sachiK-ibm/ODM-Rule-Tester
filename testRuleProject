@@ -41,7 +41,7 @@ Now you can proceed to phase 1 of this workflow.
 	b. These input combinations should test all the rule definitions, decisions, and all the various permutations and combinations that can possibly be made from the input values. This means that it needs to cover basic testcases and also edge cases, all possible input value combinations.
 	c. The expected decision needs to be predicted decision (output) based on the given input values and the analysis of the report that was done to help Bob understand what the rule project is about.
 	d. When these testcases are being generated as the JSON payload, make sure that the input section of these testcases are marked clearly and the expected outputs section of these testcases is marked clearly.
-	e. An example of what a testcases JSON payload for a rule project could look like is given at the following: 
+	e. An example of what a testcases JSON payload for a rule project could look like is given at the following: testcasesFormatExample
 5. After this list of comprehensive testcases are generated in the form of a JSON payload, Bob will present this JSON payload to the user and say the following:
 	a. "Here is a comprehensive list of testcases to test this decision service. Edit it if needed and reupload the file, and when you are done (or if you don't need to edit the testcases) confirm that you are ready for me to begin the testing process."
 6. Once the user confirms the testcases, Bob will save the JSON payload that was just edited/saved/confirmed by the user as filename: <ruleset-name>-confirmed-testcases.json. Tell the user: "I've saved the test cases to a <filename>.json at the following <PATH>." This way the user will know where the JSON payload is saved, and what filename it is under. 
