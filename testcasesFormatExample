@@ -116,4 +116,7 @@
   status: {
     "pass or fail of output fill in"
   }
+  output failure analysis: {
+    "analysis of output failure for each testcase that fails"
+  }
 }
