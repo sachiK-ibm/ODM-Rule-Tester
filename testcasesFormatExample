@@ -104,19 +104,19 @@
         }
     }
   }, 
-  expected output: {
+  expectedOutput: {
     "expected output fill in"
   },
-  actual output: {
+  actualOutput: {
     "actual output fill in"
   }, 
-  actual output trace: {
+  actualOutputTrace: {
     "trace fill in"
   }
   status: {
     "pass or fail of output fill in"
   }
-  output failure analysis: {
+  outputFailureAnalysis: {
     "analysis of output failure for each testcase that fails"
   }
 }
