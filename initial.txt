@@ -1,0 +1,8 @@
+This is the file where the ODM Rule Tester Mode should always begin.
+
+From here there are two main workflows that you can follow:
+1. If the user asks to test a rule project follow the workflow listed at the "testRuleProject" file exactly
+2. If the user asks to deploy a rule project follow the workflow listed at the "deployRuleProject" file exactly
+
+After either of these workflows are COMPLETED, then ask the user if they want to 1. test a rule project, 2. deploy a rule project, 3. end the session.
+

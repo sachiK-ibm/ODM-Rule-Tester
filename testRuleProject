@@ -12,7 +12,7 @@ SUBAGENT handles:
 - Phase 2 ONLY
 - Spawned via spawn_subagent with fork_context: false
 - Receives NO conversation history
-- Recieves the JSON file path as the input of the testcases that need to be tested
+- Receives the JSON file path as the input of the testcases that need to be tested
 - Returns one structured JSON array
 - Must never interpret, explain, or suggest fixes
 - Just present the results as they are and return that information to the parent agent
@@ -20,15 +20,17 @@ SUBAGENT handles:
 The following is the overall workflow of this instruction set, it specifies each phase in the workflow, so make sure to follow it exactly when testing a rule project:
 
 When the user initially prompts the Bob will first do the following no matter what:
-1. Confirm that the decision center/rule execution servers are started and running. To do this ask user to provide links to their deision center and rule execution server, and then check the status of the server to make sure it is already running and connected. If the aren't running/connected guide the user to start the server. After the server has been confirmed to be connected, display a confirmation message to the user. 
-2. Confirm that the ibm-odm-management-mcp server is setup, connected, and running in the users workspace. If not, help the user setup the server using the following github link: https://github.com/DecisionsDev/ibm-odm-management-mcp-server/tree/main. After the server has been confirmed to be connected, dispaly a confirmation message to the user.
-3. Once the confirmation of these two connections is done, then the rest of the process can start. Show the user a clear' confirmation that this part of the process is done. If this confirmation isn't recieved the rest of the process cannot be completed.
+1. Confirm that the decision center/rule execution servers are started and running. To do this ask user to provide links to their decision center and rule execution server, and then check the status of the server to make sure it is already running and connected. If the aren't running/connected guide the user to start the server. After the server has been confirmed to be connected, display a confirmation message to the user. 
+2. Confirm that the ibm-odm-management-mcp server is setup, connected, and running in the users workspace. If not, help the user setup the server using the following GitHub link: https://github.com/DecisionsDev/ibm-odm-management-mcp-server/tree/main. After the server has been confirmed to be connected, display a confirmation message to the user.
+3. Once the confirmation of these two connections is done, then the rest of the process can start. Show the user a clear' confirmation that this part of the process is done. If this confirmation isn't received the rest of the process cannot be completed.
 
 Now you can proceed to phase 1 of this workflow.
 #Phase 1: Choosing the rule project and test case generation
 1. Now that the decision center/rule execution server is connected and the MCP server is connected and running, Bob will present a list of available rule projects that are currently deployed on decision center to the user.
-	a. Bob will present this list of available rule projects to the user in the form of a selectable (clickable) list that the users can directly click on to select the rule project they want to test
-	b. Then the user picks the rule project that they want to focus on to test
+	a. Bob should present this list as a regular list of just rule projects deployed (but don't allow the user to select directly from clicking on this list)
+	b. Then the user types out which rule project from this list they want to test
+	c. Once the user picks out which rule project they want to test, Bob will ensure that this rule project also has a ruleApp/ruleset deployed on rule execution server
+		i. If the project doesn't have a deploy on rule execution server, then Bob will connect to the rule execution server using the mcp server and deploy automatically from 
 2. Once the user selects a rule project for testing (also by default use the most recent/updated version of the rule project), Bob then does the following:
 	a. Use the mcp server to connect to the decision center to generate the project ID of the rule project that was chosen: GET/v1/decisionservices/{decisionServiceId}/projects
 	b. Use the mcp server again connect to the decision center, to use that project ID to generate a report of the rule project: GET/v1/projects/{projectId}/report.
@@ -37,7 +39,8 @@ Now you can proceed to phase 1 of this workflow.
 		ii. Bob will understand what the output variables are of this decision service. This means it will understand what outputs need to be generated (and what the potential values for those outputs are)
 		iii. Bob will understand the context of the project. This means that it will get a comprehensive understanding of what the project is about, its purpose, its rule definitions, and what expected outputs could look like for different inputs.
 4. Once Bob has conducted a comprehensive analysis of this project report, it now has a good understanding of what the project is about and should be able to generate testcases in the form of JSON payloads that are a comprehensive list of testcases that will be used to test the rule project.
-	a. Bob will start generating the JSON payload for a comprehensive list of testcases that cover ALL possible input combinations and also includes their expected outputs (based on these input combinations)
+	a. Bob will start generating the JSON payload for a comprehensive list of testcases that cover ALL possible input combinations and also includes their expected outputs (based on these input combinations). 
+		i. If this testcase list has already been generated for the user before, then present that to the user in the chat.
 	b. These input combinations should test all the rule definitions, decisions, and all the various permutations and combinations that can possibly be made from the input values. This means that it needs to cover basic testcases and also edge cases, all possible input value combinations.
 	c. The expected decision needs to be predicted decision (output) based on the given input values and the analysis of the report that was done to help Bob understand what the rule project is about.
 	d. When these testcases are being generated as the JSON payload, make sure that the input section of these testcases are marked clearly and the expected outputs section of these testcases is marked clearly.
@@ -54,9 +57,9 @@ Now that Bob has gotten to this phase in the workflow, it is time to swithc to t
 	a. Call spawn_subagent with EXACTLY these parameters: name: "explore", fork_context: false
 	b. The description of this subagent is that: "You are a mechanical test executor. That has no prior memory of the conversation. That is intentional. The first thing that you should do when you switch to this subagent is say this to the user: "I have now switched to the subagent that will run the testcases independently, provide me with the JSON payload of the testcases that was generated." 
 	c. The first thing to do when you switch to this subagent mode is:
-		i. Confirm that the decision center/rule execution servers are started and running. To do this ask user to provide links to their deision center and rule execution server, and then check the status of the server to make sure it is already running and connected. If the aren't running/connected guide the user to start the server. After the server has been confirmed to be connected, display a confirmation message to the user. 
-		ii. Confirm that the ibm-odm-management-mcp server is setup, connected, and running in the users workspace. If not, help the user setup the server using the following github link: https://github.com/DecisionsDev/ibm-odm-management-mcp-server/tree/main. After the server has been confirmed to be connected, dispaly a confirmation message to the user.
-		iii. Once the confirmation of these two connections is done, then the rest of the process can start. Show the user a clear' confirmation that this part of the process is done. If this confirmation isn't recieved the rest of the process cannot be completed.
+		i. Confirm that the decision center/rule execution servers are started and running. To do this ask user to provide links to their decision center and rule execution server, and then check the status of the server to make sure it is already running and connected. If the aren't running/connected guide the user to start the server. After the server has been confirmed to be connected, display a confirmation message to the user. 
+		ii. Confirm that the ibm-odm-management-mcp server is setup, connected, and running in the users workspace. If not, help the user setup the server using the following github link: https://github.com/DecisionsDev/ibm-odm-management-mcp-server/tree/main. After the server has been confirmed to be connected, display a confirmation message to the user.
+		iii. Once the confirmation of these two connections is done, then the rest of the process can start. Show the user a clear' confirmation that this part of the process is done. If this confirmation isn't received the rest of the process cannot be completed.
 2. Now that you have established a connection with the decision center/rule execution server and the mcp server and making sure that both of those are already connected and running. 
 	a. First thing that Bob will do is provide the user a list of rule apps that are deployed on rule execution server. Bob will do this by using the mcp server to connect to the rule execution server. This will be presented to the user in the form of a selectable list of rule apps.
 	b. The user will then select which rule app they want to test (this means use the most recent ruleset of that ruleApp)
@@ -78,7 +81,7 @@ Now that Bob has gotten to this phase in the workflow, it is time to swithc to t
 4. Now that Bob has confirmed that it has the information of the JSON payload testcases and test results, analyze the testcases where the status was a "FAIL"
 	a. For the testcases where the status was a FAIL and there was a trace of where the rule project/decision service went wrong
 	b. Provide an analyzing statement of what the potential issue could be in the rule project and provide a recommendation of how to fix it
-		i. This analysis/educated reccommendation should be made based on the initial analysis that this parent agent had done about the context of the project and the output trace that was provided in the JSOn payload.
+		i. This analysis/educated recommendation should be made based on the initial analysis that this parent agent had done about the context of the project and the output trace that was provided in the JSON payload.
 		ii. Now edit the JSON payload again and make sure that the output failure analysis is provided in the JSON payload.
 5. After all of this is done, say to the user: JSON payload file at "<filename>-finalTestcaseAndResults.json" is the final testcases and results file along with the recommendations of how to fix the failure outputs.
 
