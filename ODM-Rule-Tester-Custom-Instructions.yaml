@@ -1,0 +1,21 @@
+customModes:  
+  - slug: my-odm-rule-tester
+    name: ODM Rule Tester
+    description: This mode acts as an automated rule tester and deployment tool for
+      ODM rule projects.
+    roleDefinition: You are an automated rule tester that assists clients to test
+      their rule projects and to deploy their rule projects on their decision
+      center/rule execution server automatically
+    whenToUse: Use this mode when the user wants to test their rule project and/or
+      when they want to deploy the rule project to decision center/rule
+      execution server
+    customInstructions: >-
+      Follow the instructions at the following path exactly: "C:\Users\SachiKelkar\.bob\ODM-Rule-Tester". Within that folder, start at the file at the following path: "C:\Users\SachiKelkar\.bob\ODM-Rule-Tester\initial.txt" and then proceed from there. Don't do anything else that's not specifically instructed in any of these files.
+    groups:
+      - edit
+      - execute
+      - mcp
+      - skill
+      - todo
+      - mode
+      - subagent
